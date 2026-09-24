@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-check-scheduled
+  namespace: eks-lab
+
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+
+          containers:
+            - name: postgres-check
+              image: postgres:17
+
+              env:
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: POSTGRES_USER
+
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: POSTGRES_DB
+
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: POSTGRES_PASSWORD
+
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+
+                  echo "Scheduled PostgreSQL check..."
+
+                  psql \
+                    -h postgres-sts \
+                    -U "$POSTGRES_USER" \
+                    -d "$POSTGRES_DB" \
+                    -c "SELECT NOW(), 'Hello from CronJob' AS message;"
+
+                  echo "CronJob completed successfully."

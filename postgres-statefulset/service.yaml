@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-sts
+  namespace: eks-lab
+spec:
+  clusterIP: None
+  selector:
+    app: postgres-sts
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: postgres
+#   namespace: eks-lab
+# spec:
+#   clusterIP: None
+#   selector:
+#     app: postgres
+#   ports:
+#     - name: postgres
+#       port: 5432
+#       targetPort: 5432

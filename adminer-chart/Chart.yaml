@@ -1,0 +1,7 @@
+apiVersion: v2
+name: adminer
+description: Adminer Helm chart for Kubernetes lab
+type: application
+
+version: 0.1.0
+appVersion: "latest"

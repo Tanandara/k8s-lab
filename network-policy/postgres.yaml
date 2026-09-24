@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-ingress
+  namespace: eks-lab
+spec:
+
+  podSelector:
+    matchLabels:
+      app: postgres-sts
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: adminer
+
+      ports:
+        - protocol: TCP
+          port: 5432

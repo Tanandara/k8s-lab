@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-check
+  namespace: eks-lab
+
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers:
+        - name: postgres-check
+          image: postgres:17
+
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
+
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              echo "Connecting to PostgreSQL..."
+
+              psql \
+                -h postgres-sts \
+                -U "$POSTGRES_USER" \
+                -d "$POSTGRES_DB" \
+                -c "SELECT NOW(), 'Hello from Kubernetes Job' AS message;"
+
+              echo "Job completed successfully."
