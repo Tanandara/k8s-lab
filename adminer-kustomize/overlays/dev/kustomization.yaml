@@ -12,7 +12,7 @@ labels:
 
 replicas:
   - name: adminer-kustomize
-    count: 1
+    count: 2
 
 images:
   - name: adminer
